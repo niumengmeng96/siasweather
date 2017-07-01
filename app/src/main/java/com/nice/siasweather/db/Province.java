@@ -2,13 +2,12 @@ package com.nice.siasweather.db;
 
 import org.litepal.crud.DataSupport;
 
-/**
- * Created by 萌 on 2017/7/1.
- */
-
 public class Province extends DataSupport {
+
     private int id;
+
     private String provinceName;
+
     private int provinceCode;
 
     public int getId() {

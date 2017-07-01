@@ -1,13 +1,15 @@
 package com.nice.siasweather.db;
 
-/**
- * Created by 萌 on 2017/7/1.
- */
+import org.litepal.crud.DataSupport;
 
-public class City {
+public class City extends DataSupport {
+
     private int id;
+
     private String cityName;
+
     private int cityCode;
+
     private int provinceId;
 
     public int getId() {
@@ -41,4 +43,5 @@ public class City {
     public void setProvinceId(int provinceId) {
         this.provinceId = provinceId;
     }
+
 }
