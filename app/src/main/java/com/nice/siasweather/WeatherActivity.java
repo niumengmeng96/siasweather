@@ -24,6 +24,7 @@ import com.nice.siasweather.gson.Forecast;
 import com.nice.siasweather.gson.Weather;
 import com.nice.siasweather.service.AutoUpdateService;
 import com.nice.siasweather.util.HttpUtil;
+import com.nice.siasweather.util.SpUtils;
 import com.nice.siasweather.util.Utility;
 
 import java.io.IOException;
@@ -32,10 +33,13 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.nice.siasweather.R.id.nav_button;
+import static com.nice.siasweather.R.id.nav_setbutton;
+
 /**
  * Created by 萌 on 2017/7/1.
  */
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
 
     public DrawerLayout drawerLayout;
 
@@ -47,7 +51,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView titleCity;
 
-    private TextView titleUpdateTime;
+    private Button titleSetting;
 
     private TextView degreeText;
 
@@ -83,7 +87,7 @@ public class WeatherActivity extends AppCompatActivity {
         bingPicImg = (ImageView) findViewById(R.id.bing_pic_img);
         weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
         titleCity = (TextView) findViewById(R.id.title_city);
-        titleUpdateTime = (TextView) findViewById(R.id.title_update_time);
+        titleSetting = (Button) findViewById(nav_setbutton);
         degreeText = (TextView) findViewById(R.id.degree_text);
         weatherInfoText = (TextView) findViewById(R.id.weather_info_text);
         forecastLayout = (LinearLayout) findViewById(R.id.forecast_layout);
@@ -95,7 +99,9 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navButton = (Button) findViewById(R.id.nav_button);
+        navButton = (Button) findViewById(nav_button);
+        titleSetting.setOnClickListener(this);
+        navButton.setOnClickListener(this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
         if (weatherString != null) {
@@ -115,12 +121,7 @@ public class WeatherActivity extends AppCompatActivity {
                 requestWeather(mWeatherId);
             }
         });
-        navButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+
         String bingPic = prefs.getString("bing_pic", null);
         if (bingPic != null) {
             Glide.with(this).load(bingPic).into(bingPicImg);
@@ -207,7 +208,7 @@ public class WeatherActivity extends AppCompatActivity {
         String degree = weather.now.temperature + "℃";
         String weatherInfo = weather.now.more.info;
         titleCity.setText(cityName);
-        titleUpdateTime.setText(updateTime);
+//        titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
         forecastLayout.removeAllViews();
@@ -233,9 +234,25 @@ public class WeatherActivity extends AppCompatActivity {
         comfortText.setText(comfort);
         carWashText.setText(carWash);
         sportText.setText(sport);
+        boolean Update = SpUtils.getBoolean(this, "自动更新", false);
+        if (Update) {
+            Intent intent = new Intent(this, AutoUpdateService.class);
+            startService(intent);
+        }
         weatherLayout.setVisibility(View.VISIBLE);
-        Intent intent = new Intent(this, AutoUpdateService.class);
-        startService(intent);
+
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.nav_setbutton:
+                Intent intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
+                break;
+            case nav_button:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+        }
+    }
 }

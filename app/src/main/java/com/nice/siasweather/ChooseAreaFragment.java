@@ -112,8 +112,7 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
-                }
-                else if (currentLevel == LEVEL_COUNTY) {
+                } else if (currentLevel == LEVEL_COUNTY) {
                     String weatherId = countyList.get(position).getWeatherId();
                     if (getActivity() instanceof MainActivity) {
                         Intent intent = new Intent(getActivity(), WeatherActivity.class);
@@ -147,6 +146,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryProvinces() {
         titleText.setText("中国");
+
         backButton.setVisibility(View.GONE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
@@ -168,6 +168,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
+
         backButton.setVisibility(View.VISIBLE);
         cityList = DataSupport.where("provinceid = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0) {

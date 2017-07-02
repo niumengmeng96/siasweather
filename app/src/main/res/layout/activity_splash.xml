@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/splashone">
-
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="COPYRIGHT©2017 NICE工作室版权所有"
+        android:textSize="15dp"
+        android:textColor="#fff"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"/>
 </RelativeLayout>
