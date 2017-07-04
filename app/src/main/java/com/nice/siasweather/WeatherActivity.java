@@ -239,6 +239,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             Intent intent = new Intent(this, AutoUpdateService.class);
             startService(intent);
         }
+
         weatherLayout.setVisibility(View.VISIBLE);
 
     }

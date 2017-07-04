@@ -3,11 +3,16 @@ package com.nice.siasweather.service;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.nice.siasweather.gson.Weather;
 import com.nice.siasweather.util.HttpUtil;
@@ -20,6 +25,17 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class AutoUpdateService extends Service {
+//
+    private LocalBroadcastManager localBroadcastManager;
+    private LocalReceiver localReceiver;
+    private IntentFilter intentFilter;
+    private String number;
+    private boolean aa;
+    private int an;
+    private int anHour;
+    private int anHoura;
+    private int anHourb;
+    private int anHourc;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -30,14 +46,61 @@ public class AutoUpdateService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         updateWeather();
         updateBingPic();
+        an = 8 * 60 * 60 * 1000;
+        // 这是8小时的毫秒数
+        anHour = 8 * 60 * 60 * 1000;
+        anHoura = anHour *2;
+        anHourb = anHoura *2;
+        anHourc = anHourb *2;
+//        number=intent.getStringExtra("number");
+        SharedPreferences sp=getSharedPreferences("更新频率number",MODE_PRIVATE);
+        number=sp.getString("number","0");
+
+        if (aa){
+            number="0";
+        }else {
+            if (number.equals("0")){
+                an=anHour;
+                Log.e("开启服务",number);
+
+            }else if (number.equals("1")){
+                Log.e("开启服务",number);
+                an=anHoura;
+            }else if (number.equals("2")){
+                Log.e("开启服务",number);
+                an=anHourb;
+            }
+            else if (number.equals("3")){
+                Log.e("开启服务",number);
+                an=anHourc;
+            }
+        }
+
+        //获取实例
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("com.nice.siasweather.LOCAL_BROADCAST_UPDATETIME");
+        localReceiver = new LocalReceiver();
+        localBroadcastManager.registerReceiver(localReceiver, intentFilter);//注册本地广播
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour = 8 * 60 * 60 * 1000; // 这是8小时的毫秒数
-        long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
+
+        long triggerAtTime = SystemClock.elapsedRealtime() + an;
         Intent i = new Intent(this, AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
         manager.cancel(pi);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
+//        Toast.makeText(this,
+//                "服务" + number,
+//                Toast.LENGTH_SHORT).show();
+//        Log.e("时间", String.valueOf(an));
+
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        localBroadcastManager.unregisterReceiver(localReceiver);
+        super.onDestroy();
     }
 
     /**
@@ -90,6 +153,22 @@ public class AutoUpdateService extends Service {
                 e.printStackTrace();
             }
         });
+    }
+    public class LocalReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+             number=intent.getExtras().getString("number");
+            aa=false;
+            SharedPreferences.Editor editor=getSharedPreferences("更新频率number",MODE_PRIVATE).edit();
+            editor.putString("number",number);
+            editor.apply();
+//            Log.e("接收到广播",number);
+
+
+
+        }
     }
 
 }
