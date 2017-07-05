@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -254,6 +255,32 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             case nav_button:
                 drawerLayout.openDrawer(GravityCompat.START);
                 break;
+        }
+    }
+    /**
+     * 双击退出
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            ExitApp();
+        }
+        return false;
+    }
+
+    private long exitTime = 0;
+
+    public void ExitApp() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        } else {
+            this.finish();
         }
     }
 }
